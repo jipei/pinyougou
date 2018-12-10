@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>angularJs的测试</title>
-    <script src="../js/angular.min.js"></script>
+    <script src="js/angular.min.js"></script>
     <script type="text/javascript">
 
         /**
@@ -19,19 +19,34 @@
         //$scope表示当前处理器所在模块的上下文；可以将双向绑定的变量直接获取并修改
         app.controller("myController", function ($scope) {
 
-            //注册方法
-            $scope.add = function () {
-                return parseInt($scope.x) + parseInt($scope.y);
-            };
+            //定义数值数组
+            $scope.nums = [1,2,3,4,5];
+
+            //定义一个自定义对象数组
+            $scope.persons = [
+                {"id":121, "name":"黑马1"},
+                {"id":122, "name":"黑马2"},
+                {"id":123, "name":"黑马3"}
+            ];
         });
 
     </script>
 </head>
 <body ng-app="app" ng-controller="myController">
-x = <input ng-model="x"><br>
-y = <input ng-model="y"><br>
 
+<div ng-repeat="num in nums">
+    {{num}}<br>
+</div><br>
 
-x+y={{add()}}
+<table>
+    <tr>
+        <td>id</td>
+        <td>名称</td>
+    </tr>
+    <tr ng-repeat="p in persons">
+        <td>{{p.id}}</td>
+        <td>{{p.name}}</td>
+    </tr>
+</table>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>angularJs的测试</title>
-    <script src="../js/angular.min.js"></script>
+    <script src="js/angular.min.js"></script>
     <script type="text/javascript">
 
         /**
@@ -17,26 +17,25 @@
         //参数1：处理器名称
         //参数2：处理器的方法体，里面可以设置很多方法，在$scope中注册的方法可以在表达式和指令中使用
         //$scope表示当前处理器所在模块的上下文；可以将双向绑定的变量直接获取并修改
-        app.controller("myController", function ($scope) {
+        //$http内置的网络服务对象，可以发送get/post...
+        app.controller("myController", function ($scope, $http) {
 
-            //定义数值数组
-            $scope.nums = [1,2,3,4,5];
+            $scope.findPersons = function () {
+                $http.get("data.json").success(function (response) {
+                    $scope.persons = response;
 
-            //定义一个自定义对象数组
-            $scope.persons = [
-                {"id":121, "name":"黑马1"},
-                {"id":122, "name":"黑马2"},
-                {"id":123, "name":"黑马3"}
-            ];
+                }).error(function () {
+                    alert("加载数据失败！");
+                });
+
+            };
+
         });
 
     </script>
 </head>
-<body ng-app="app" ng-controller="myController">
+<body ng-app="app" ng-controller="myController" ng-init="findPersons()">
 
-<div ng-repeat="num in nums">
-    {{num}}<br>
-</div><br>
 
 <table>
     <tr>
