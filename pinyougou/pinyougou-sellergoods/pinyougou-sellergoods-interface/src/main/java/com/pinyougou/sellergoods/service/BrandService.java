@@ -10,4 +10,12 @@ public interface BrandService {
      * @return 品牌列表
      */
     List<TbBrand> queryAll();
+
+    /**
+     * 分页查询品牌的第1页每页5条数据
+     * @param page 页号
+     * @param rows 页大小
+     * @return 品牌列表
+     */
+    List<TbBrand> testPage(Integer page, Integer rows);
 }
