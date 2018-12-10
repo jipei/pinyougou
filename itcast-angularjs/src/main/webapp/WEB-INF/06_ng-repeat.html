@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJs的测试</title>
+    <script src="../js/angular.min.js"></script>
+    <script type="text/javascript">
+
+        /**
+         * 定义模块
+         * 参数1：模块的名称，要与ng-app的一致
+         * 参数2：要加载的其它模块，如果有则在数据写上模块名称；如果没有要加载也不能删除空数组，如果删除了则会认为前面定义过模块只是加载
+         */
+        var app = angular.module("app", []);
+
+        //注册处理器
+        //参数1：处理器名称
+        //参数2：处理器的方法体，里面可以设置很多方法，在$scope中注册的方法可以在表达式和指令中使用
+        //$scope表示当前处理器所在模块的上下文；可以将双向绑定的变量直接获取并修改
+        app.controller("myController", function ($scope) {
+
+            //定义数值数组
+            $scope.nums = [1,2,3,4,5];
+
+            //定义一个自定义对象数组
+            $scope.persons = [
+                {"id":121, "name":"黑马1"},
+                {"id":122, "name":"黑马2"},
+                {"id":123, "name":"黑马3"}
+            ];
+        });
+
+    </script>
+</head>
+<body ng-app="app" ng-controller="myController">
+
+<div ng-repeat="num in nums">
+    {{num}}<br>
+</div><br>
+
+<table>
+    <tr>
+        <td>id</td>
+        <td>名称</td>
+    </tr>
+    <tr ng-repeat="p in persons">
+        <td>{{p.id}}</td>
+        <td>{{p.name}}</td>
+    </tr>
+</table>
+</body>
+</html>
