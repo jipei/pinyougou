@@ -19,12 +19,58 @@
         //定义模块
         var app = angular.module("pinyougou", ["pagination"]);
 
+        //定义业务对象
+        app.service("brandService", function ($http) {
+
+            //查询所有 this 表示当前对象brandService
+            this.findAll = function () {
+                return $http.get("../brand/findAll.do");
+            };
+
+            //根据分页信息查询
+            this.findPage = function (page, rows) {
+                return $http.get("../brand/findPage.do?page=" + page + "&rows=" + rows);
+
+            };
+
+            //新增
+            this.add = function (entity) {
+                return $http.post("../brand/add.do", entity);
+
+            };
+
+            //更新
+            this.update = function (entity) {
+                return $http.post("../brand/update.do", entity);
+
+            };
+
+            //根据主键查询
+            this.findOne = function (id) {
+              return $http.get("../brand/findOne.do?id=" + id);
+            };
+
+
+            //删除
+            this.delete = function (selectedIds) {
+                return $http.get("../brand/delete.do?ids=" + selectedIds);
+
+            };
+
+
+            //查询方法
+            this.search = function (page, rows, searchEntity) {
+                return $http.post("../brand/search.do?page=" + page + "&rows="+ rows, searchEntity);
+            };
+
+        });
+
         //定义处理器
-        app.controller("brandController", function ($scope, $http) {
+        app.controller("brandController", function ($scope, $http, brandService) {
 
             //查询所有
             $scope.findAll = function () {
-                $http.get("../brand/findAll.do").success(function (response) {
+                brandService.findAll().success(function (response) {
                     $scope.list = response;
 
                 }).error(function () {
@@ -56,7 +102,7 @@
 
             //根据分页信息查询
             $scope.findPage = function (page, rows) {
-                $http.get("../brand/findPage.do?page=" + page + "&rows=" + rows).success(function (response) {
+                brandService.findPage(page, rows).success(function (response) {
                     //response 分页结果对象total,rows
                     $scope.list = response.rows;
                     //总记录数
@@ -69,13 +115,15 @@
             //保存方法
             $scope.save = function () {
 
-                var method = "add";
+                var obj;
                 if($scope.entity.id != null){
                     //修改
-                    method = "update";
+                    obj = brandService.update($scope.entity);
+                } else {
+                    obj = brandService.add($scope.entity);
                 }
 
-                $http.post("../brand/"+method+".do", $scope.entity).success(function (response) {
+                obj.success(function (response) {
                     if(response.success){
                         //刷新列表
                         $scope.reloadList();
@@ -89,7 +137,7 @@
 
             //根据主键查询
             $scope.findOne = function (id) {
-              $http.get("../brand/findOne.do?id=" + id).success(function (response) {
+                brandService.findOne(id).success(function (response) {
                   $scope.entity = response;
               });
             };
@@ -122,7 +170,7 @@
                 }
                 if(confirm("确定要删除选择了那些记录吗？")){
                     //如果点击了 确定 则返回true
-                    $http.get("../brand/delete.do?ids=" + $scope.selectedIds).success(function (response) {
+                    brandService.delete($scope.selectedIds).success(function (response) {
                         if (response.success) {
                             $scope.reloadList();
                         } else {
@@ -139,7 +187,7 @@
             //查询方法
             $scope.search = function (page, rows) {
 
-                $http.post("../brand/search.do?page=" + page + "&rows="+ rows, $scope.searchEntity).success(function (response) {
+                brandService.search(page, rows, $scope.searchEntity).success(function (response) {
                     //response 分页结果对象total,rows
                     $scope.list = response.rows;
                     //总记录数
