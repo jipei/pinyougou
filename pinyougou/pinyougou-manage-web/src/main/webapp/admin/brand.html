@@ -50,7 +50,8 @@
             };
 
             $scope.reloadList = function(){
-                $scope.findPage($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
+                //$scope.findPage($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
+                $scope.search($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
             };
 
             //根据分页信息查询
@@ -133,6 +134,19 @@
 
             };
 
+            $scope.searchEntity = {};
+
+            //查询方法
+            $scope.search = function (page, rows) {
+
+                $http.post("../brand/search.do?page=" + page + "&rows="+ rows, $scope.searchEntity).success(function (response) {
+                    //response 分页结果对象total,rows
+                    $scope.list = response.rows;
+                    //总记录数
+                    $scope.paginationConf.totalItems = response.total;
+                });
+            };
+
         });
     </script>
 
@@ -156,13 +170,15 @@
                                         <button type="button" class="btn btn-default" ng-click="entity={}" title="新建" data-toggle="modal" data-target="#editModal" ><i class="fa fa-file-o"></i> 新建</button>
                                         <button type="button" class="btn btn-default" ng-click="delete()" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>
                                         <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
-                                        {{selectedIds}}
+                                        {{searchEntity}}
                                     </div>
                                 </div>
                             </div>
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-							        品牌名称：<input> 品牌首字母：<input>  <button class="btn btn-default">查询</button>
+							        品牌名称：<input ng-model="searchEntity.name">
+                                    品牌首字母：<input ng-model="searchEntity.firstChar">
+                                    <button ng-click="reloadList()" class="btn btn-default">查询</button>
                                 </div>
                             </div>
                             <!--工具栏/-->
@@ -211,7 +227,7 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-			<h3 id="myModalLabel">品牌编辑</h3>{{entity}}
+			<h3 id="myModalLabel">品牌编辑</h3>
 		</div>
 		<div class="modal-body">		
 			<table class="table table-bordered table-striped"  width="800px">
