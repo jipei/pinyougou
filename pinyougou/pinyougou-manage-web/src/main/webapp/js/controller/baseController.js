@@ -40,4 +40,21 @@ app.controller("baseController", function ($scope) {
 
     };
 
+    $scope.jsonToString = function (jsonListStr, key) {
+        var str = "";
+        //将json列表格式字符串转换为json列表对象
+        var jsonArray = JSON.parse(jsonListStr);
+        for (var i = 0; i < jsonArray.length; i++) {
+            var jsonObj = jsonArray[i];
+            if(str.length > 0){
+                str += "," + jsonObj[key];
+            } else {
+                //第一个值
+                str = jsonObj[key];
+            }
+        }
+
+        return str;
+    };
+
 });
