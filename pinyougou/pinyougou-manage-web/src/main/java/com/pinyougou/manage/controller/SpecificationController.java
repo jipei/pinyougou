@@ -70,10 +70,15 @@ public class SpecificationController {
         return Result.fail("修改失败");
     }
 
+    /**
+     * 根据规格id数组批量删除这些规格id对应的选项
+     * @param ids 规格id数组
+     * @return 操作结果
+     */
     @GetMapping("/delete")
     public Result delete(Long[] ids) {
         try {
-            specificationService.deleteByIds(ids);
+            specificationService.deleteSpecificationByIds(ids);
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
