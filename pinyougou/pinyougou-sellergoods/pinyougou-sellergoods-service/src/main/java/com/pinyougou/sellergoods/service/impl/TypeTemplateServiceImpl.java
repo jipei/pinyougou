@@ -26,9 +26,9 @@ public class TypeTemplateServiceImpl extends BaseServiceImpl<TbTypeTemplate> imp
 
         Example example = new Example(TbTypeTemplate.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(typeTemplate.get***())){
-            criteria.andLike("***", "%" + typeTemplate.get***() + "%");
-        }*/
+        if(!StringUtils.isEmpty(typeTemplate.getName())){
+            criteria.andLike("name", "%" + typeTemplate.getName() + "%");
+        }
 
         List<TbTypeTemplate> list = typeTemplateMapper.selectByExample(example);
         PageInfo<TbTypeTemplate> pageInfo = new PageInfo<>(list);
