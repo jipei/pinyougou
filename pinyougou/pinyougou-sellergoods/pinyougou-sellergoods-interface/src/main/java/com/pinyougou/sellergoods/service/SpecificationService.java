@@ -5,6 +5,9 @@ import com.pinyougou.service.BaseService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Specification;
 
+import java.util.List;
+import java.util.Map;
+
 public interface SpecificationService extends BaseService<TbSpecification> {
 
     PageResult search(Integer page, Integer rows, TbSpecification specification);
@@ -33,4 +36,10 @@ public interface SpecificationService extends BaseService<TbSpecification> {
      * @param ids 规格id数组
      */
     void deleteSpecificationByIds(Long[] ids);
+
+    /**
+     * 加载select2的规格数据列表；格式：[{id:'1',text:'内存'},{id:'2',text:'尺寸'}]
+     * @return 规格数据列表
+     */
+    List<Map<String, String>> selectOptionList();
 }

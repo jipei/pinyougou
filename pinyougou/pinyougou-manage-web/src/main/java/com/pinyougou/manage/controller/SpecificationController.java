@@ -9,6 +9,7 @@ import com.pinyougou.vo.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/specification")
 @RestController
@@ -98,5 +99,15 @@ public class SpecificationController {
                                @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
         return specificationService.search(page, rows, specification);
     }
+
+    /**
+     * 加载select2的规格数据列表；格式：[{id:'1',text:'内存'},{id:'2',text:'尺寸'}]
+     * @return 规格数据列表
+     */
+    @GetMapping("/selectOptionList")
+    public List<Map<String, String>> selectOptionList(){
+        return specificationService.selectOptionList();
+    }
+
 
 }
