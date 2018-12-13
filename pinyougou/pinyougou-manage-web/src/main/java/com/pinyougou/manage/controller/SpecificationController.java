@@ -44,8 +44,13 @@ public class SpecificationController {
         return Result.fail("增加失败");
     }
 
+    /**
+     * 根据规格id查询规格及其对应的选项列表
+     * @param id 规格id
+     * @return 规格及其对应的选项列表
+     */
     @GetMapping("/findOne")
-    public TbSpecification findOne(Long id) {
+    public Specification findOne(Long id) {
         return specificationService.findOne(id);
     }
 
