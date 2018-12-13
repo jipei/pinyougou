@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/brand")
 //@Controller
@@ -18,6 +19,15 @@ public class BrandController {
     //注入代理对象
     @Reference
     private BrandService brandService;
+
+    /**
+     * 加载select2的品牌数据列表；格式：[{id:'1',text:'联想'},{id:'2',text:'华为'}]
+     * @return 品牌数据列表
+     */
+    @GetMapping("/selectOptionList")
+    public List<Map<String, String>> selectOptionList(){
+        return brandService.selectOptionList();
+    }
 
     /**
      * 根据条件分页模糊查询品牌数据
