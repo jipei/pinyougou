@@ -1,5 +1,8 @@
 package com.pinyougou.shop.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.pojo.TbSeller;
+import com.pinyougou.sellergoods.service.SellerService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -14,16 +17,28 @@ import java.util.List;
  * 动态认证授权类；可以根据用户输入的用户名进行认证和查询其角色权限
  */
 public class UserDetailServiceImpl implements UserDetailsService {
+
+    //@Reference
+    private SellerService sellerService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        //获取角色权限集合
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        //设置一个角色
-        authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+        TbSeller seller = sellerService.findOne(username);
 
-        //只要密码是123456的就可以登录进入系统
-        //会将user中的123456与用户在登录页面输入的密码进行对比；如果是123456则通过
-        return new User(username, "123456", authorities);
+        //如果商家存在并且审核通过才返回user
+        if (seller != null && "1".equals(seller.getStatus())) {
+            //获取角色权限集合
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            //设置一个角色；正式的话；可以再根据用户名查询该用户的角色列表
+            authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+
+            return new User(username, seller.getPassword(), authorities);
+        }
+        return null;
+    }
+
+    public void setSellerService(SellerService sellerService) {
+        this.sellerService = sellerService;
     }
 }
