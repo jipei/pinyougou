@@ -7,6 +7,7 @@ import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/seller")
@@ -27,15 +28,23 @@ public class SellerController {
         return sellerService.findPage(page, rows);
     }
 
+    /**
+     * 新增商家到数据库中
+     * @param seller 商家信息
+     * @return 操作结果
+     */
     @PostMapping("/add")
     public Result add(@RequestBody TbSeller seller) {
         try {
+            //设置审核状态为 未审核
+            seller.setStatus("0");
+            seller.setCreateTime(new Date());
             sellerService.add(seller);
-            return Result.ok("增加成功");
+            return Result.ok("商家入驻成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("增加失败");
+        return Result.fail("商家入驻失败");
     }
 
     @GetMapping("/findOne")
