@@ -40,12 +40,12 @@ http://www.springframework.org/schema/security/spring-security.xsd">
         <logout/>
     </http>
 
+    <!--配置动态认证授权类-->
+    <beans:bean id="userDetailServiceImpl" class="com.pinyougou.shop.service.impl.UserDetailServiceImpl"/>
+
     <!--配置认证管理器-->
     <authentication-manager>
-        <authentication-provider>
-            <user-service>
-                <user name="admin" password="123456" authorities="ROLE_SELLER"/>
-            </user-service>
+        <authentication-provider user-service-ref="userDetailServiceImpl">
         </authentication-provider>
     </authentication-manager>
 
