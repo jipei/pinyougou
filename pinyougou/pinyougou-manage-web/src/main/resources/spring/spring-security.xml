@@ -33,6 +33,9 @@ http://www.springframework.org/schema/security/spring-security.xsd">
         <headers>
             <frame-options policy="SAMEORIGIN"/>
         </headers>
+
+        <!--退出-->
+        <logout/>
     </http>
 
     <!--配置认证管理器-->
