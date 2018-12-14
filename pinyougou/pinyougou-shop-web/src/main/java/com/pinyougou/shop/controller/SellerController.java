@@ -5,6 +5,7 @@ import com.pinyougou.pojo.TbSeller;
 import com.pinyougou.sellergoods.service.SellerService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -39,6 +40,9 @@ public class SellerController {
             //设置审核状态为 未审核
             seller.setStatus("0");
             seller.setCreateTime(new Date());
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            seller.setPassword(bCryptPasswordEncoder.encode(seller.getPassword()));
+
             sellerService.add(seller);
             return Result.ok("商家入驻成功");
         } catch (Exception e) {
