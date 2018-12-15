@@ -78,7 +78,10 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
 
         switch (grade){
             case 1:
+                //如果是第一级的时候二、三级都不在导航条中显示
+                //entity_1 二级分类
                 $scope.entity_1 = null;
+                //entity_2 三级分类
                 $scope.entity_2 = null;
                 break;
             case 2:
