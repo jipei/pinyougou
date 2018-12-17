@@ -232,6 +232,7 @@ app.controller("goodsController", function ($scope, $controller, $location, good
             var oldItem = itemList[i];
             for (var j = 0; j < specOptions.length; j++) {
                 var option = specOptions[j];
+                //深度克隆
                 var newItem = JSON.parse(JSON.stringify(oldItem));
                 newItem.spec[specName] = option;
 
