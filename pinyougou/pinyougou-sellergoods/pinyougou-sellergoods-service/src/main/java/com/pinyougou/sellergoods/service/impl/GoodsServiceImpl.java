@@ -1,12 +1,12 @@
 package com.pinyougou.sellergoods.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.pinyougou.mapper.GoodsDescMapper;
-import com.pinyougou.mapper.GoodsMapper;
-import com.pinyougou.pojo.TbGoods;
-import com.pinyougou.pojo.TbItem;
+import com.pinyougou.mapper.*;
+import com.pinyougou.pojo.*;
 import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Goods;
@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service(interfaceClass = GoodsService.class)
 public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsService {
@@ -25,6 +28,19 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     @Autowired
     private GoodsDescMapper goodsDescMapper;
+
+    @Autowired
+    private ItemMapper itemMapper;
+
+    @Autowired
+    private ItemCatMapper itemCatMapper;
+
+    @Autowired
+    private SellerMapper sellerMapper;
+
+    @Autowired
+    private BrandMapper brandMapper;
+
 
     @Override
     public PageResult search(Integer page, Integer rows, TbGoods goods) {
@@ -52,6 +68,54 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         goodsDescMapper.insertSelective(goods.getGoodsDesc());
 
         //3、保存商品sku列表信息
+        saveItemList(goods);
+    }
 
+    /**
+     * 保存商品sku列表
+     * @param goods 商品信息（基本、描述、sku列表）
+     */
+    private void saveItemList(Goods goods) {
+        if(goods.getItemList() != null && goods.getItemList().size() > 0){
+            for (TbItem item : goods.getItemList()) {
+
+                //sku标题 = spu的名称+规格的名称拼接
+                String title = goods.getGoods().getGoodsName();
+                //获取sku的规格
+                Map<String, String> map = JSON.parseObject(item.getSpec(), Map.class);
+                Set<Map.Entry<String, String>> entries = map.entrySet();
+                for (Map.Entry<String, String> entry : entries) {
+                    title += " " + entry.getValue();
+                }
+                item.setTitle(title);
+
+                item.setGoodsId(goods.getGoods().getId());
+                //sku的商品分类 = spu的第3级商品分类
+                item.setCategoryid(goods.getGoods().getCategory3Id());
+                //商品分类中文名称
+                TbItemCat itemCat = itemCatMapper.selectByPrimaryKey(item.getCategoryid());
+                item.setCategory(itemCat.getName());
+
+                //获取spu的第一张图片
+                if (!StringUtils.isEmpty(goods.getGoodsDesc().getItemImages())) {
+                    List<Map> imageList = JSONArray.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
+                    item.setImage(imageList.get(0).get("url").toString());
+                }
+
+                item.setSellerId(goods.getGoods().getSellerId());
+                TbSeller seller = sellerMapper.selectByPrimaryKey(item.getSellerId());
+                item.setSeller(seller.getName());
+
+                item.setCreateTime(new Date());
+                item.setUpdateTime(item.getCreateTime());
+
+                //品牌
+                TbBrand brand = brandMapper.selectByPrimaryKey(goods.getGoods().getBrandId());
+                item.setBrand(brand.getName());
+
+                //保存sku
+                itemMapper.insertSelective(item);
+            }
+        }
     }
 }
