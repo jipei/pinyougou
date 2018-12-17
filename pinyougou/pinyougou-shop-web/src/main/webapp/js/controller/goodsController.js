@@ -193,7 +193,9 @@ app.controller("goodsController", function ($scope, $controller, $location, good
         //查看当前的规格是否已经选择过
         var specObj = $scope.findObjectByKeyAndValue($scope.entity.goodsDesc.specificationItems, "attributeName", specName);
         if(specObj != null) {
+            //规格存在
             if($event.target.checked){
+                //往规格中的attributeValue添加一个选项名称
                 specObj.attributeValue.push(optionName);
             } else {
                var optIndex = specObj.attributeValue.indexOf(optionName);
@@ -206,6 +208,7 @@ app.controller("goodsController", function ($scope, $controller, $location, good
                 }
             }
         } else {
+            //规格不存在的时候
             $scope.entity.goodsDesc.specificationItems.push({"attributeName":specName,"attributeValue":[optionName]});
         }
     };
