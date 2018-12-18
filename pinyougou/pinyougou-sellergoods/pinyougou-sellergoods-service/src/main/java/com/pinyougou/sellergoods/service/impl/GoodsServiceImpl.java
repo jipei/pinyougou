@@ -48,9 +48,15 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(goods.get***())){
-            criteria.andLike("***", "%" + goods.get***() + "%");
-        }*/
+        if(!StringUtils.isEmpty(goods.getAuditStatus())){
+            criteria.andEqualTo("auditStatus", goods.getAuditStatus());
+        }
+        if(!StringUtils.isEmpty(goods.getSellerId())){
+            criteria.andEqualTo("sellerId", goods.getSellerId());
+        }
+        if(!StringUtils.isEmpty(goods.getGoodsName())){
+            criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
+        }
 
         List<TbGoods> list = goodsMapper.selectByExample(example);
         PageInfo<TbGoods> pageInfo = new PageInfo<>(list);
