@@ -62,10 +62,15 @@ public class GoodsController {
         return goodsService.findGoodsByGoodsId(id);
     }
 
+    /**
+     * 更新基本、描述、sku列表
+     * @param goods 商品信息（基本、描述、sku列表）
+     * @return 操作结果
+     */
     @PostMapping("/update")
-    public Result update(@RequestBody TbGoods goods) {
+    public Result update(@RequestBody Goods goods) {
         try {
-            goodsService.update(goods);
+            goodsService.updateGoods(goods);
             return Result.ok("修改成功");
         } catch (Exception e) {
             e.printStackTrace();
