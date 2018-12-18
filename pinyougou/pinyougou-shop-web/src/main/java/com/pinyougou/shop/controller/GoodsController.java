@@ -70,8 +70,16 @@ public class GoodsController {
     @PostMapping("/update")
     public Result update(@RequestBody Goods goods) {
         try {
-            goodsService.updateGoods(goods);
-            return Result.ok("修改成功");
+            String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+            //获取原有这个商品的商家
+            TbGoods oldGoods = goodsService.findOne(goods.getGoods().getId());
+
+            if (sellerId.equals(goods.getGoods().getSellerId()) && sellerId.equals(oldGoods.getSellerId())) {
+                goodsService.updateGoods(goods);
+                return Result.ok("修改成功");
+            } else {
+                return Result.ok("非法修改");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,6 +111,23 @@ public class GoodsController {
         String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
         goods.setSellerId(sellerId);
         return goodsService.search(page, rows, goods);
+    }
+
+    /**
+     * 批量更新商品的审核状态
+     * @param ids 商品spu id数组
+     * @param status 要修改的状态
+     * @return 操作结果
+     */
+    @GetMapping("/updateStatus")
+    public Result updateStatus(Long[] ids, String status){
+        try {
+            goodsService.updateStatus(ids, status);
+            return Result.ok("修改商品状态成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("修改商品状态失败");
     }
 
 }
