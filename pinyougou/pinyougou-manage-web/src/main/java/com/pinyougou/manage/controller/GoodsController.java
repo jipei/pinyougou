@@ -54,10 +54,16 @@ public class GoodsController {
         return Result.fail("修改失败");
     }
 
+    /**
+     * 将选择了的那些商品spu id数组对应的商品的删除状态修改为1
+     * @param ids 商品spu id数组
+     * @return 操作结果
+     */
     @GetMapping("/delete")
     public Result delete(Long[] ids) {
         try {
-            goodsService.deleteByIds(ids);
+            //goodsService.deleteByIds(ids);
+            goodsService.deleteGoodsByIds(ids);
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
