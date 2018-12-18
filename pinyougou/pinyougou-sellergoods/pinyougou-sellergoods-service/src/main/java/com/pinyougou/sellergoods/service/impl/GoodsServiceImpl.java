@@ -12,11 +12,14 @@ import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 
+@Transactional
 @Service(interfaceClass = GoodsService.class)
 public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsService {
 
@@ -68,6 +71,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     public void addGoods(Goods goods) {
         //1、保存商品基本信息
         add(goods.getGoods());
+
+        //int i = 1/0;
 
         //2、保存商品描述信息
         goods.getGoodsDesc().setGoodsId(goods.getGoods().getId());
