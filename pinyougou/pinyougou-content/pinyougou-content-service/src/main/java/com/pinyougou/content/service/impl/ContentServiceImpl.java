@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 @Service(interfaceClass = ContentService.class)
@@ -26,6 +28,53 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Override
+    public void add(TbContent tbContent) {
+        super.add(tbContent);
+        //更新分类对应的redis缓存
+        updateContentListInRedisByCategoryId(tbContent.getCategoryId());
+    }
+
+    /**
+     * 将分类id在redis中对应的内容列表删除
+     * @param categoryId 分类id
+     */
+    private void updateContentListInRedisByCategoryId(Long categoryId) {
+        redisTemplate.boundHashOps(CONTENT_LIST).delete(categoryId);
+    }
+
+    @Override
+    public void update(TbContent tbContent) {
+        //查询老内容
+        TbContent oldContent = findOne(tbContent.getId());
+
+        super.update(tbContent);
+
+        if (!oldContent.getCategoryId().equals(tbContent.getCategoryId())) {
+          //说明内容分类被修改过，需要将原来分类的内容列表删除
+          updateContentListInRedisByCategoryId(oldContent.getCategoryId());
+        }
+
+        //更新分类对应的内容列表
+        updateContentListInRedisByCategoryId(tbContent.getCategoryId());
+    }
+
+    @Override
+    public void deleteByIds(Serializable[] ids) {
+        //根据内容id数组查询数据库中对应的内容列表
+        Example example = new Example(TbContent.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+        List<TbContent> contentList = contentMapper.selectByExample(example);
+        //遍历每个内容对应的内容分类删除其redis中的数据
+        if (contentList != null && contentList.size() > 0) {
+            for (TbContent tbContent : contentList) {
+                updateContentListInRedisByCategoryId(tbContent.getCategoryId());
+            }
+        }
+        //删除内容
+        super.deleteByIds(ids);
+    }
 
     @Override
     public PageResult search(Integer page, Integer rows, TbContent content) {
