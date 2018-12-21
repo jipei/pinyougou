@@ -9,6 +9,7 @@ import com.pinyougou.content.service.ContentService;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
@@ -17,8 +18,14 @@ import java.util.List;
 @Service(interfaceClass = ContentService.class)
 public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements ContentService {
 
+    //内容列表在redis中的键名key的名称
+    private static final String CONTENT_LIST = "CONTENT_LIST";
+
     @Autowired
     private ContentMapper contentMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public PageResult search(Integer page, Integer rows, TbContent content) {
@@ -39,6 +46,16 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
     @Override
     public List<TbContent> findContentListByCategoryId(Long categoryId) {
         List<TbContent> contentList = null;
+        try {
+            //从redis中查询内容分类对应的内容列表找到则返回
+            contentList = (List<TbContent>) redisTemplate.boundHashOps(CONTENT_LIST).get(categoryId);
+            if (contentList != null && contentList.size() > 0) {
+                return contentList;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //1、查询有效的分类对应的内容列表根据排序字段降序排序
         //select * from tb_content where category_id = ? and status='1' order by sort_order desc
         Example example = new Example(TbContent.class);
@@ -49,6 +66,14 @@ public class ContentServiceImpl extends BaseServiceImpl<TbContent> implements Co
         example.orderBy("sortOrder").desc();
 
         contentList = contentMapper.selectByExample(example);
+
+        try {
+            //将内容列表存入redis
+            redisTemplate.boundHashOps(CONTENT_LIST).put(categoryId, contentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         //2、返回列表
         return contentList;
     }
