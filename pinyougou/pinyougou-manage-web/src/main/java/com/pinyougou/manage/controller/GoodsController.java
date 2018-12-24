@@ -9,6 +9,7 @@ import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RequestMapping("/goods")
@@ -69,6 +70,9 @@ public class GoodsController {
         try {
             //goodsService.deleteByIds(ids);
             goodsService.deleteGoodsByIds(ids);
+            //更新搜索系统的数据
+            itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
+
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();

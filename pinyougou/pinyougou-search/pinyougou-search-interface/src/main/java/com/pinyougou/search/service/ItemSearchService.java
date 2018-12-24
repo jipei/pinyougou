@@ -19,4 +19,10 @@ public interface ItemSearchService {
      * @param itemList 商品sku列表
      */
     void importItemList(List<TbItem> itemList);
+
+    /**
+     * 根据spu id数组列表删除solr的数据
+     * @param goodsIdsList spu id数组
+     */
+    void deleteByGoodsIds(List<Long> goodsIdsList);
 }
