@@ -22,7 +22,7 @@ app.controller("searchController", function ($scope, searchService) {
         }
 
         //重新搜索
-        //$scope.search();
+        $scope.search();
 
     };
 
@@ -34,6 +34,8 @@ app.controller("searchController", function ($scope, searchService) {
             //规格
             delete $scope.searchMap.spec[key];
         }
+        //重新搜索
+        $scope.search();
 
     };
 
