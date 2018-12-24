@@ -74,6 +74,23 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             }
 
         }
+        //4. 根据价格进行价格过滤条件的设置；
+        if(!StringUtils.isEmpty(searchMap.get("price"))){
+            //价格的值可以能为：0-500 或者 3000-*
+            String[] prices = searchMap.get("price").toString().split("-");
+
+            //创建过滤查询条件对象
+            Criteria startCriteria = new Criteria("item_price").greaterThanEqual(prices[0]);
+            SimpleFilterQuery startFilterQuery = new SimpleFilterQuery(startCriteria);
+            query.addFilterQuery(startFilterQuery);
+
+            if (!"*".equals(prices[1])) {
+                Criteria endCriteria = new Criteria("item_price").lessThanEqual(prices[1]);
+                SimpleFilterQuery endFilterQuery = new SimpleFilterQuery(endCriteria);
+                query.addFilterQuery(endFilterQuery);
+            }
+        }
+
 
 
         //查询
