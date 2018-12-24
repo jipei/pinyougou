@@ -79,7 +79,7 @@
 										<!--searchAutoComplete-->
 										<div class="input-append">
 											<input type="text" ng-model="searchMap.keywords" id="autocomplete" type="text" class="input-error input-xxlarge" />
-											<button ng-click="search()" class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
+											<button ng-click="searchMap.pageNo=1;search()" class="sui-btn btn-xlarge btn-danger" type="button">搜索</button>
 										</div>
 									</form>
 								</div>
@@ -349,22 +349,22 @@
 				<div class="fr page">
 					<div class="sui-pagination pagination-large">
 						<ul>
-							<li class="prev disabled">
-								<a href="#">«上一页</a>
+							<li class="prev {{(searchMap.pageNo!='1')?'':'disabled'}}">
+								<a ng-click="queryByPageNo(searchMap.pageNo-1)" href="#">«上一页</a>
 							</li>
                             <li ng-if="frontDot" class="dotted"><span>...</span></li>
-							<li ng-repeat="pn in pageNoList" class="active">
-								<a href="#">{{pn}}</a>
+							<li ng-repeat="pn in pageNoList" class="{{isCurrentPage(pn)?'active':''}}">
+								<a ng-click="queryByPageNo(pn)" href="#">{{pn}}</a>
 							</li>
 							<li ng-if="backDot" class="dotted"><span>...</span></li>
-							<li class="next">
-								<a href="#">下一页»</a>
+							<li class="next {{(searchMap.pageNo<resultMap.totalPages)?'':'disabled'}}">
+								<a ng-click="queryByPageNo(searchMap.pageNo+1)" href="#">下一页»</a>
 							</li>
 						</ul>
 						<div><span>共 {{resultMap.totalPages}} 页&nbsp;</span><span>
       到第
       <input ng-model="searchMap.pageNo" type="text" class="page-num">
-      页 <button class="page-confirm" onclick="alert(1)">确定</button></span></div>
+      页 <button class="page-confirm" ng-click="queryByPageNo(searchMap.pageNo)">确定</button></span></div>
 					</div>
 				</div>
 			</div>

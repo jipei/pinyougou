@@ -22,6 +22,7 @@ app.controller("searchController", function ($scope, searchService) {
             //规格
             $scope.searchMap.spec[key] = value;
         }
+        $scope.searchMap.pageNo = 1;
 
         //重新搜索
         $scope.search();
@@ -36,6 +37,7 @@ app.controller("searchController", function ($scope, searchService) {
             //规格
             delete $scope.searchMap.spec[key];
         }
+        $scope.searchMap.pageNo = 1;
         //重新搜索
         $scope.search();
 
@@ -91,6 +93,21 @@ app.controller("searchController", function ($scope, searchService) {
             $scope.pageNoList.push(i);
         }
 
+
+    };
+
+    //判断是否当前页号
+    $scope.isCurrentPage = function (pageNo) {
+        return $scope.searchMap.pageNo==pageNo;
+    };
+
+    //跳转到某个页
+    $scope.queryByPageNo = function (pageNo) {
+        pageNo = parseInt(pageNo);
+        if(pageNo > 0 && pageNo <= $scope.resultMap.totalPages){
+            $scope.searchMap.pageNo = pageNo;
+            $scope.search();
+        }
 
     };
 
