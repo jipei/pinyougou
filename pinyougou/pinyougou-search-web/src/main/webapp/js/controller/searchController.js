@@ -1,7 +1,7 @@
 app.controller("searchController", function ($scope, searchService) {
 
     //搜索条件对象
-    $scope.searchMap = {"keywords":""};
+    $scope.searchMap = {"keywords":"", "category":"", "brand":"", "spec":{}};
 
     //搜索
     $scope.search = function () {
@@ -9,6 +9,20 @@ app.controller("searchController", function ($scope, searchService) {
             $scope.resultMap = response;
 
         });
+
+    };
+
+    //添加过滤条件
+    $scope.addSearchItem = function (key, value) {
+        if ("category" == key || "brand" == key) {
+            $scope.searchMap[key] = value;
+        } else {
+            //规格
+            $scope.searchMap.spec[key] = value;
+        }
+
+        //重新搜索
+        //$scope.search();
 
     };
 
