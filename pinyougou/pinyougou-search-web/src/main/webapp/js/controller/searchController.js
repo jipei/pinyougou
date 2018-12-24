@@ -1,4 +1,4 @@
-app.controller("searchController", function ($scope, searchService) {
+app.controller("searchController", function ($scope,$location, searchService) {
 
     //搜索条件对象
     $scope.searchMap = {"keywords":"", "category":"", "brand":"", "spec":{}, "price":"", "pageNo":1, "pageSize":20, "sortField":"", "sort":""};
@@ -116,6 +116,13 @@ app.controller("searchController", function ($scope, searchService) {
         $scope.searchMap.sortField = sortField;
         $scope.searchMap.sort = sort;
 
+        $scope.search();
+    };
+
+    //加载搜索关键字并搜索
+    $scope.loadKeywords = function () {
+        //获取地址栏中携带的搜索关键字
+        $scope.searchMap.keywords = $location.search()["keywords"];
         $scope.search();
     };
 
