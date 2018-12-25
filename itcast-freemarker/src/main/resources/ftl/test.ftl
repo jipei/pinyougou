@@ -66,6 +66,23 @@ today的格式化日期时间：${today?string("yyyy年MM月dd日 HH:mm:ss SSSS"
 <br>
 <hr>
 <br>
+空值的处理<br>
+emp为空直接什么都不显示的话，那么加!就可以了：${emp!}；如果值为空要显示内容的话；那么!之后加内容即可：${emp!"emp的值为空"}
+<br>
+<br>
+??? 前面两个??表示变量是否存在，如果存在则返回true，否则返回false；第三个?表示函数的调用。<br>
+
+<br>
+<#assign bool3=false />
+${bool3???string}
+
+<br>
+<br>
+<#if str3??>
+    str3存在
+<#else>
+    str3不存在
+</#if>
 
 
 <br>
