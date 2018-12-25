@@ -52,4 +52,12 @@ public interface GoodsService extends BaseService<TbGoods> {
      * @return sku商品列表
      */
     List<TbItem> findItemListByGoodsIdsAndStatus(Long[] goodsIds, String itemStatus);
+
+    /**
+     * 据商品的spu id查询商品信息（基本、描述、已启用的sku列表）
+     * @param goodsId 商品的spu id
+     * @param itemStatus sku的状态
+     * @return goods
+     */
+    Goods findGoodsByGoodsIdAndStatus(Long goodsId, String itemStatus);
 }

@@ -84,24 +84,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     @Override
     public Goods findGoodsByGoodsId(Long id) {
-        Goods goods = new Goods();
-
-        //1、查询商品基本信息
-        TbGoods tbGoods = findOne(id);
-        goods.setGoods(tbGoods);
-
-        //2、查询商品描述信息
-        TbGoodsDesc tbGoodsDesc = goodsDescMapper.selectByPrimaryKey(id);
-        goods.setGoodsDesc(tbGoodsDesc);
-
-        //3、根据商品spu id查询商品sku列表信息
-        //select * from tb_item where goods_id=?
-        TbItem item = new TbItem();
-        item.setGoodsId(id);
-        List<TbItem> itemList = itemMapper.select(item);
-        goods.setItemList(itemList);
-
-        return goods;
+        return findGoodsByGoodsIdAndStatus(id, null);
     }
 
     @Override
@@ -169,6 +152,34 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
                 .andEqualTo("status", itemStatus)
                 .andIn("goodsId", Arrays.asList(goodsIds));
         return itemMapper.selectByExample(example);
+    }
+
+    @Override
+    public Goods findGoodsByGoodsIdAndStatus(Long goodsId, String itemStatus) {
+        Goods goods = new Goods();
+
+        //1、查询商品基本信息
+        TbGoods tbGoods = findOne(goodsId);
+        goods.setGoods(tbGoods);
+
+        //2、查询商品描述信息
+        TbGoodsDesc tbGoodsDesc = goodsDescMapper.selectByPrimaryKey(goodsId);
+        goods.setGoodsDesc(tbGoodsDesc);
+
+        //3、根据商品spu id查询商品sku列表信息
+        //select * from tb_item where goods_id=? and status=? order by is_default desc
+        Example example = new Example(TbItem.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("goodsId", goodsId);
+        if (!StringUtils.isEmpty(itemStatus)) {
+            criteria.andEqualTo("status", itemStatus);
+        }
+        example.orderBy("isDefault").desc();
+
+        List<TbItem> itemList = itemMapper.selectByExample(example);
+        goods.setItemList(itemList);
+
+        return goods;
     }
 
     /**
