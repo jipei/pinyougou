@@ -33,4 +33,15 @@
     </bean>
 
 
+    <!--审核的主题 -->
+    <bean id="itemTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="pyg_item_topic"/>
+    </bean>
+
+    <!--删除的主题 -->
+    <bean id="itemDeleteTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="pyg_item_delete_topic"/>
+    </bean>
+
+
 </beans>

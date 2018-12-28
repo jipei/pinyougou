@@ -8,6 +8,7 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -32,6 +33,12 @@ public class GoodsController {
 
     @Autowired
     private ActiveMQQueue itemSolrDeleteQueue;
+
+    @Autowired
+    private ActiveMQTopic itemTopic;
+
+    @Autowired
+    private ActiveMQTopic itemDeleteTopic;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -83,20 +90,33 @@ public class GoodsController {
             goodsService.deleteGoodsByIds(ids);
             //更新搜索系统的数据
             //itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
-            jmsTemplate.send(itemSolrDeleteQueue, new MessageCreator() {
-                @Override
-                public Message createMessage(Session session) throws JMSException {
-                    ObjectMessage objectMessage = session.createObjectMessage();
-                    objectMessage.setObject(ids);
-                    return objectMessage;
-                }
-            });
+            sendMQMsg(itemSolrDeleteQueue, ids);
+
+            //发送主题消息
+            sendMQMsg(itemTopic, ids);
 
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Result.fail("删除失败");
+    }
+
+    /**
+     * 发送MQ消息
+     * @param destination 发送模式
+     * @param ids 商品spu id数组
+     * @throws JMSException
+     */
+    private void sendMQMsg(Destination destination, Long[] ids) throws JMSException {
+        jmsTemplate.send(destination, new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage();
+                objectMessage.setObject(ids);
+                return objectMessage;
+            }
+        });
     }
 
     /**
@@ -139,6 +159,9 @@ public class GoodsController {
                         return textMessage;
                     }
                 });
+
+                //发送主题消息
+                sendMQMsg(itemDeleteTopic, ids);
             }
             return Result.ok("修改商品状态成功");
         } catch (Exception e) {
