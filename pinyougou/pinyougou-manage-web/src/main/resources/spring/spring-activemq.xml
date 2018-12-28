@@ -27,5 +27,10 @@
         <constructor-arg value="pyg_item_solr_queue"/>
     </bean>
 
+    <!--删除同步搜索系统的队列 -->
+    <bean id="itemSolrDeleteQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="pyg_item_solr_delete_queue"/>
+    </bean>
+
 
 </beans>

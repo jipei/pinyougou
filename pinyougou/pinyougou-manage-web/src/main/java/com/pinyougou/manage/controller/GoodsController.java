@@ -13,10 +13,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +29,9 @@ public class GoodsController {
 
     @Autowired
     private ActiveMQQueue itemSolrQueue;
+
+    @Autowired
+    private ActiveMQQueue itemSolrDeleteQueue;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -83,6 +83,14 @@ public class GoodsController {
             goodsService.deleteGoodsByIds(ids);
             //更新搜索系统的数据
             //itemSearchService.deleteByGoodsIds(Arrays.asList(ids));
+            jmsTemplate.send(itemSolrDeleteQueue, new MessageCreator() {
+                @Override
+                public Message createMessage(Session session) throws JMSException {
+                    ObjectMessage objectMessage = session.createObjectMessage();
+                    objectMessage.setObject(ids);
+                    return objectMessage;
+                }
+            });
 
             return Result.ok("删除成功");
         } catch (Exception e) {
