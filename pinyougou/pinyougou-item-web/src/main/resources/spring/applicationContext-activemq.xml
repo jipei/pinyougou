@@ -64,7 +64,7 @@
 
     <!-- 配置一个jms监听容器 -->
     <bean id="jmsContainer2" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="connectionFactory" ref="connectionFactory2"/>
         <property name="destination" ref="itemDeleteTopic"/>
         <property name="messageListener" ref="itemDeleteMessageListener"/>
         <!-- 消息持久化 -->

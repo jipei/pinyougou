@@ -93,7 +93,7 @@ public class GoodsController {
             sendMQMsg(itemSolrDeleteQueue, ids);
 
             //发送主题消息
-            sendMQMsg(itemTopic, ids);
+            sendMQMsg(itemDeleteTopic, ids);
 
             return Result.ok("删除成功");
         } catch (Exception e) {
@@ -161,7 +161,7 @@ public class GoodsController {
                 });
 
                 //发送主题消息
-                sendMQMsg(itemDeleteTopic, ids);
+                sendMQMsg(itemTopic, ids);
             }
             return Result.ok("修改商品状态成功");
         } catch (Exception e) {
