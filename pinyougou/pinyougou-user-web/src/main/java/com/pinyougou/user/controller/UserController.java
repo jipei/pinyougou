@@ -1,6 +1,7 @@
 package com.pinyougou.user.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.pinyougou.common.util.PhoneFormatCheckUtils;
 import com.pinyougou.pojo.TbUser;
 import com.pinyougou.user.service.UserService;
 import com.pinyougou.vo.PageResult;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 @RequestMapping("/user")
 @RestController
@@ -17,6 +19,28 @@ public class UserController {
 
     @Reference
     private UserService userService;
+
+    /**
+     * 发送短信验证码
+     * @param phone 手机号
+     * @return 操作结果
+     */
+    @GetMapping("/sendSmsCode")
+    public Result sendSmsCode(String phone){
+        Result result = Result.fail("发送短信验证码失败");
+        try {
+            if (PhoneFormatCheckUtils.isPhoneLegal(phone)) {
+                //发送短信验证码
+                userService.sendSmsCode(phone);
+                result = Result.ok("发送验证码成功！");
+            } else {
+                result = Result.fail("手机号码不正确，发送验证码失败！");
+            }
+        } catch (PatternSyntaxException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     @RequestMapping("/findAll")
     public List<TbUser> findAll() {
