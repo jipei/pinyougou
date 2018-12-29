@@ -27,4 +27,18 @@ public class MQController {
 
         return "发送到spring.boot.map.queue消息成功。";
     }
+
+    @GetMapping("/sendSmsMsg")
+    public String sendSmsMsg(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("mobile", "13078274348");
+        map.put("signName", "黑马");
+        map.put("templateCode", "SMS_125018593");
+        map.put("templateParam", "{\"code\":\"345345\"}");
+
+        //参数1：要发送的模式名称（默认队列模式），参数2：发送的数据
+        jmsMessagingTemplate.convertAndSend("itcast_sms_queue", map);
+
+        return "发送到itcast_sms_queue消息成功。";
+    }
 }
