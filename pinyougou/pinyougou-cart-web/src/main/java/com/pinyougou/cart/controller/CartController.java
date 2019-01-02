@@ -84,18 +84,28 @@ public class CartController {
         //判断用户是否已经登录；
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
+            String cartListJsonStr = CookieUtils.getCookieValue(request, COOKIE_CART_LIST, true);
+            List<Cart> cookieCartList = new ArrayList<>();
+            if (!StringUtils.isEmpty(cartListJsonStr)) {
+                cookieCartList = JSONArray.parseArray(cartListJsonStr, Cart.class);
+            }
             if ("anonymousUser".equals(username)) {
                 //未登录；从cookie中获取数据并转换
-                String cartListJsonStr = CookieUtils.getCookieValue(request, COOKIE_CART_LIST, true);
-                List<Cart> cookieCartList = new ArrayList<>();
-                if (!StringUtils.isEmpty(cartListJsonStr)) {
-                    cookieCartList = JSONArray.parseArray(cartListJsonStr, Cart.class);
-                }
+
                 return cookieCartList;
 
             } else {
                 //已登录；从redis中获取数据
                 List<Cart> redisCartList = cartService.findCartListInRedisByUsername(username);
+                //合并购物车
+                if (cookieCartList != null && cookieCartList.size() > 0) {
+                    //1. 将cookie中的购物车与redis中的购物车列表进行合并到一个新列表；
+                    redisCartList = cartService.mergeCartList(cookieCartList, redisCartList);
+                    //2. 将新合并的购物车列表写回redis；
+                    cartService.saveCartListInRedisByUsername(redisCartList, username);
+                    //3. 删除cookie中的购物车
+                    CookieUtils.deleteCookie(request, response, COOKIE_CART_LIST);
+                }
 
                 return redisCartList;
             }

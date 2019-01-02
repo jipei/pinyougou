@@ -27,4 +27,12 @@ public interface CartService {
      * @param username 用户名
      */
     void saveCartListInRedisByUsername(List<Cart> cartList, String username);
+
+    /**
+     * 将cookie中的购物车与redis中的购物车列表进行合并到一个新列表；
+     * @param cookieCartList 购物车列表
+     * @param redisCartList 购物车列表
+     * @return 合并后的购物车列表
+     */
+    List<Cart> mergeCartList(List<Cart> cookieCartList, List<Cart> redisCartList);
 }
