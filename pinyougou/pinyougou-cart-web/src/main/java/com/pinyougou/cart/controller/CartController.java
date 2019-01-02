@@ -1,5 +1,6 @@
 package com.pinyougou.cart.controller;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONArray;
 import com.pinyougou.cart.service.CartService;
 import com.pinyougou.common.util.CookieUtils;
@@ -36,7 +37,7 @@ public class CartController {
     @Autowired
     private HttpServletResponse response;
 
-    @Autowired
+    @Reference
     private CartService cartService;
 
     /**
