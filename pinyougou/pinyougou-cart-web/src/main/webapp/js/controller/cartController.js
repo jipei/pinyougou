@@ -13,6 +13,8 @@ app.controller("cartController", function ($scope, cartService) {
         cartService.findCartList().success(function (response) {
             $scope.cartList = response;
 
+            //计算商品的总价和总数量
+            $scope.totalValue = cartService.sumTotalValue(response);
         });
 
     };
