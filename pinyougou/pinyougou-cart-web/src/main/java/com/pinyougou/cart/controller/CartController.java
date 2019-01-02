@@ -1,8 +1,10 @@
 package com.pinyougou.cart.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.pinyougou.cart.service.CartService;
 import com.pinyougou.common.util.CookieUtils;
 import com.pinyougou.vo.Cart;
+import com.pinyougou.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -22,14 +24,54 @@ import java.util.Map;
 @RestController
 public class CartController {
 
-    //在cookie中的名称
+    //购物车在cookie中的名称
     private static final String COOKIE_CART_LIST = "PYG_CART_LIST";
-    
+    //购物车在cookie中的最大生存时间；1天
+    private static final int COOKIE_CART_MAX_AGE = 3600*24;
+
+
     @Autowired
     private HttpServletRequest request;
 
     @Autowired
     private HttpServletResponse response;
+
+    @Autowired
+    private CartService cartService;
+
+    /**
+     * 登录与未登录加入购物车
+     *
+     * @param itemId 商品sku id
+     * @param num 购买数量
+     * @return 操作结果
+     */
+    @GetMapping("/addItemToCartList")
+    public Result addItemToCartList(Long itemId, Integer num){
+        Result result = Result.fail("加入购物车失败");
+        try {
+            //判断用户是否已经登录；
+            //1. 获取购物车列表；
+            List<Cart> cartList = findCartList();
+            //2. 调用业务方法将商品加入购物车列表；
+            List<Cart> newCartList = cartService.addItemToCartList(cartList, itemId, num);
+
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            if ("anonymousUser".equals(username)) {
+                //未登录；将购物车存入cookie
+
+                //3. 将最新的购物车列表更新回cookie；
+                CookieUtils.setCookie(request, response, COOKIE_CART_LIST,
+                        JSONArray.toJSONString(newCartList), COOKIE_CART_MAX_AGE, true);
+            } else {
+                //已登录；将购物车存入redis
+            }
+            result = Result.ok("加入购物车成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     /**
      * 登录与未登录情况下获取购物车列表

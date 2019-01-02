@@ -8,4 +8,9 @@ app.service("cartService", function ($http) {
         return $http.get("cart/findCartList.do?t=" + Math.random());
 
     };
+
+    this.addItemToCartList = function (itemId, num) {
+        return $http.get("cart/addItemToCartList.do?itemId=" +itemId + "&num=" + num + "&t=" + Math.random());
+
+    };
 });
