@@ -16,4 +16,10 @@ http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
     <!--扫描使用了阿里DUBBO的注解的包-->
     <dubbo:annotation package="com.pinyougou.order.service.impl"/>
 
+    <!--id生成器-->
+    <bean id="idWorker" class="com.pinyougou.common.util.IdWorker">
+        <constructor-arg name="datacenterId" value="0"/>
+        <constructor-arg name="workerId" value="0"/>
+    </bean>
+
 </beans>
