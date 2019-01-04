@@ -9,6 +9,7 @@ import com.pinyougou.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,19 +43,20 @@ public class CartController {
 
     /**
      * 登录与未登录加入购物车
-     *
+     * CrossOrigin 表示设置跨域域名和其它跨域信息；origins 允许可以跨域获取响应的系统 allowCredentials 获取cookie
      * @param itemId 商品sku id
      * @param num 购买数量
      * @return 操作结果
      */
     @GetMapping("/addItemToCartList")
+    @CrossOrigin(origins = "http://item.pinyougou.com", allowCredentials = "true")
     public Result addItemToCartList(Long itemId, Integer num){
         Result result = Result.fail("加入购物车失败");
         try {
             //设置允许跨域请求的域名
-            response.setHeader("Access-Control-Allow-Origin", "http://item.pinyougou.com");
+            //response.setHeader("Access-Control-Allow-Origin", "http://item.pinyougou.com");
             //允许读取或获取cookie中的信息
-            response.setHeader("Access-Control-Allow-Credentials", "true");
+            //response.setHeader("Access-Control-Allow-Credentials", "true");
 
             //判断用户是否已经登录；
             //1. 获取购物车列表；
