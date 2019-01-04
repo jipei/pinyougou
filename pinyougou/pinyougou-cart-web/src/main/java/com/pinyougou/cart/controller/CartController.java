@@ -51,6 +51,11 @@ public class CartController {
     public Result addItemToCartList(Long itemId, Integer num){
         Result result = Result.fail("加入购物车失败");
         try {
+            //设置允许跨域请求的域名
+            response.setHeader("Access-Control-Allow-Origin", "http://item.pinyougou.com");
+            //允许读取或获取cookie中的信息
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+
             //判断用户是否已经登录；
             //1. 获取购物车列表；
             List<Cart> cartList = findCartList();
