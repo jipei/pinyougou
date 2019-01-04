@@ -57,4 +57,27 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
 
     };
 
+    //提交订单
+    $scope.submitOrder = function () {
+        //设置订单的信息
+        $scope.order.receiverAreaName = $scope.address.address;
+        $scope.order.receiverMobile = $scope.address.mobile;
+        $scope.order.receiver = $scope.address.contact;
+
+        cartService.submitOrder($scope.order).success(function (response) {
+            if(response.success){
+                if("1"==$scope.order.paymentType){
+                    //微信付款；跳转到扫码界面
+                    location.href = "pay.html?outTradeNo=" + response.message;
+                } else {
+                    //货到付款；跳转到成功页面
+                    location.href = "paysuccess.html";
+                }
+            } else {
+                alert(response.message);
+            }
+
+        });
+    };
+
 });
