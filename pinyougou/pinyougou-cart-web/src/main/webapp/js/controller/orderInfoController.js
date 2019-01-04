@@ -24,9 +24,28 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
         addressService.findAddressList().success(function (response) {
             $scope.addressList = response;
 
+            //查询默认地址
+            for (var i = 0; i < response.length; i++) {
+                var address = response[i];
+                if("1"==address.isDefault){
+                    $scope.address = address;
+                    break;
+                }
+            }
         });
 
     };
 
+    //选择地址
+    $scope.selectAddress = function (address) {
+        $scope.address = address;
+
+    };
+
+    //判断当前地址是否是选择的地址
+    $scope.isSelectedAddress = function (address) {
+        return $scope.address == address;
+
+    };
 
 });
