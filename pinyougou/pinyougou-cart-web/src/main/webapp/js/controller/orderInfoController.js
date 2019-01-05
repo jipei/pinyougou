@@ -68,7 +68,7 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
             if(response.success){
                 if("1"==$scope.order.paymentType){
                     //微信付款；跳转到扫码界面
-                    location.href = "pay.html?outTradeNo=" + response.message;
+                    location.href = "pay.html#?outTradeNo=" + response.message;
                 } else {
                     //货到付款；跳转到成功页面
                     location.href = "paysuccess.html";

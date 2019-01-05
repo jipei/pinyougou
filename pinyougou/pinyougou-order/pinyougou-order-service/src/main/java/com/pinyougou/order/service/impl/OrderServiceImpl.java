@@ -143,4 +143,9 @@ public class OrderServiceImpl extends BaseServiceImpl<TbOrder> implements OrderS
         //6. 如果是微信付款则返回支付日志Id否则返回空字符串
         return outTradeNo;
     }
+
+    @Override
+    public TbPayLog findPayLogByOutTradeNo(String outTradeNo) {
+        return payLogMapper.selectByPrimaryKey(outTradeNo);
+    }
 }
