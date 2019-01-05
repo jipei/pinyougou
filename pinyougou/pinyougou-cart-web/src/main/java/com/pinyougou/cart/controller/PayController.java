@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.order.service.OrderService;
 import com.pinyougou.pay.service.WeixinPayService;
 import com.pinyougou.pojo.TbPayLog;
+import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,41 @@ public class PayController {
 
     @Reference
     private WeixinPayService weixinPayService;
+
+
+    /**
+     * 根据订单编号查询订单的支付状态
+     * @param outTradeNo 订单号
+     * @return 操作结果
+     */
+    public Result queryPayStatus(String outTradeNo){
+        Result result = Result.fail("查询支付状态失败！");
+
+        try {
+            while (true) {
+                //1. 编写处理器方法无限循环去查询支付系统中订单的支付状态；
+                Map<String, String> map = weixinPayService.queryPayStatus(outTradeNo);
+                if (map == null) {
+                    //2. 如果查询失败则退出循环；
+                    break;
+                }
+
+                if("SUCCESS".equals(map.get("trade_state"))){
+                    //3. 如果查询订单已经支付，调用业务方法更新订单状态，返回查询成功。
+                    orderService.updateOrderStatus(outTradeNo, map.get("transaction_id"));
+                    result = Result.ok("查询支付状态成功");
+                    break;
+                }
+
+                //每隔3秒
+                Thread.sleep(3000);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 
 
