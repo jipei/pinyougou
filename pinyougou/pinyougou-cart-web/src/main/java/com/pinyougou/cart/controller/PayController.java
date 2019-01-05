@@ -28,6 +28,7 @@ public class PayController {
      * @param outTradeNo 订单号
      * @return 操作结果
      */
+    @GetMapping("/queryPayStatus")
     public Result queryPayStatus(String outTradeNo){
         Result result = Result.fail("查询支付状态失败！");
 
