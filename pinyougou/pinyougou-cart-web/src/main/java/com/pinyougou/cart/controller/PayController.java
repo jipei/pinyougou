@@ -33,6 +33,8 @@ public class PayController {
         Result result = Result.fail("查询支付状态失败！");
 
         try {
+            //3分钟内查询；
+            int count = 0;
             while (true) {
                 //1. 编写处理器方法无限循环去查询支付系统中订单的支付状态；
                 Map<String, String> map = weixinPayService.queryPayStatus(outTradeNo);
@@ -45,6 +47,11 @@ public class PayController {
                     //3. 如果查询订单已经支付，调用业务方法更新订单状态，返回查询成功。
                     orderService.updateOrderStatus(outTradeNo, map.get("transaction_id"));
                     result = Result.ok("查询支付状态成功");
+                    break;
+                }
+                count++;
+                if (count > 60) {
+                    result = Result.fail("支付超时");
                     break;
                 }
 

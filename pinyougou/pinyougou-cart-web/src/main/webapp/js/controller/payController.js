@@ -45,8 +45,14 @@ app.controller("payController", function ($scope, $location, cartService, paySer
                 //跳转到成功页面
                 location.href = "paysuccess.html";
             } else {
-                //跳转到失败页面
-                location.href = "payfail.html";
+                if ("支付超时" == response.message) {
+                    alert(response.message);
+                    //重新生成二维码
+                    $scope.createNative();
+                } else {
+                    //跳转到失败页面
+                    location.href = "payfail.html";
+                }
             }
 
         });
