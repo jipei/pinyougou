@@ -16,6 +16,15 @@ public class SeckillGoodsController {
     @Reference
     private SeckillGoodsService seckillGoodsService;
 
+    /**
+     * 查询可以秒杀的商品列表
+     * @return 秒杀商品列表
+     */
+    @RequestMapping("/findList")
+    public List<TbSeckillGoods> findList() {
+        return seckillGoodsService.findList();
+    }
+
     @RequestMapping("/findAll")
     public List<TbSeckillGoods> findAll() {
         return seckillGoodsService.findAll();
