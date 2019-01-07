@@ -119,4 +119,31 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
         //4、将订单从redis中删除
         redisTemplate.boundHashOps(SECKILL_ORDERS).delete(outTradeNo);
     }
+
+    @Override
+    public void removeSeckillOrderInRedis(String outTradeNo) throws InterruptedException {
+        //1. 获取订单判断订单的存在；
+        TbSeckillOrder seckillOrder = findSeckillOrderInRedisByOutTradeNo(outTradeNo);
+        if(seckillOrder != null) {
+            //   加分布式锁
+            RedisLock redisLock = new RedisLock(redisTemplate);
+            if(redisLock.lock(seckillOrder.getSeckillId().toString())) {
+                //2. 根据秒杀商品id获取在redis中的商品；如果不存在则到mysql中查询该商品并更新库存后更新到redis中；
+                TbSeckillGoods seckillGoods = (TbSeckillGoods) redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS)
+                        .get(seckillOrder.getSeckillId());
+                if (seckillGoods == null) {
+                     seckillGoods = seckillGoodsMapper.selectByPrimaryKey(seckillOrder.getSeckillId());
+                }
+                //加回剩余库存
+                seckillGoods.setStockCount(seckillGoods.getStockCount() + 1);
+                //更新回redis
+                redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS).put(seckillGoods.getId(), seckillGoods);
+
+                //   释放分布式锁
+                redisLock.unlock(seckillOrder.getSeckillId().toString());
+                //3. 删除在redis中的订单
+                redisTemplate.boundHashOps(SECKILL_ORDERS).delete(outTradeNo);
+            }
+        }
+    }
 }

@@ -52,6 +52,20 @@ public class PayController {
                 }
                 count++;
                 if (count > 20) {
+
+                    //1、关闭微信中对应的订单
+                    Map<String, String> resultMap = weixinPayService.closeOrder(outTradeNo);
+
+                    if (resultMap != null && "ORDERPAID".equals(resultMap.get("err_code"))) {
+                        //关闭订单的过程中被支付了；则需要更新订单到MySQL
+                        orderService.saveSeckillOrderInRedisToDb(outTradeNo, map.get("transaction_id"));
+                        result = Result.ok("查询支付状态成功");
+                        break;
+                    }
+
+                    //关闭订单成功；将redis中的订单删除并更新秒杀商品剩余库存
+                    orderService.removeSeckillOrderInRedis(outTradeNo);
+
                     result = Result.fail("支付超时");
                     break;
                 }
