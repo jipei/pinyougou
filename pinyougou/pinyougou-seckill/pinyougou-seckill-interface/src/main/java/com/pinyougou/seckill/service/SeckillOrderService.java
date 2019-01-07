@@ -14,5 +14,5 @@ public interface SeckillOrderService extends BaseService<TbSeckillOrder> {
      * @param username 用户id
      * @return 操作结果
      */
-    String submitOrder(Long seckillId, String username);
+    String submitOrder(Long seckillId, String username) throws InterruptedException;
 }
