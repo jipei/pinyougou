@@ -47,9 +47,14 @@ public class SeckillGoodsController {
         return Result.fail("增加失败");
     }
 
+    /**
+     * 根据秒杀商品id从redis中获取该商品
+     * @param id 秒杀商品id
+     * @return 秒杀商品
+     */
     @GetMapping("/findOne")
     public TbSeckillGoods findOne(Long id) {
-        return seckillGoodsService.findOne(id);
+        return seckillGoodsService.findOneInRedisBySeckillId(id);
     }
 
     @PostMapping("/update")
